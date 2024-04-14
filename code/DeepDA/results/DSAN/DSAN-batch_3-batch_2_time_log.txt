@@ -1,0 +1,24 @@
+Namespace(config='DSAN/DSAN.yaml', seed=1, num_workers=3, log_file_name='results/DSAN/DSAN-batch_3-batch_2.csv', backbone='resnet50', use_bottleneck=True, data_dir='C:/Users/admin/Desktop/MPhil/transferlearning/code/DeepDA/seed_dataset_office', src_domain='batch_3', tgt_domain='batch_2', batch_size=32, n_epoch=20, early_stop=0, epoch_based_training=False, n_iter_per_epoch=500, lr=0.01, momentum=0.9, weight_decay=0.0005, lr_gamma=0.0003, lr_decay=0.75, lr_scheduler=True, transfer_loss_weight=0.5, transfer_loss='lmmd', device=device(type='cuda'), n_class=2, max_iter=10000)
+Epoch,Time_Taken(s)
+1,106.960077
+2,106.358882
+3,106.343165
+4,106.526950
+5,106.576867
+6,106.029768
+7,106.324188
+8,106.141489
+9,106.166713
+10,106.159974
+11,106.193819
+12,106.167117
+13,106.149895
+14,106.154275
+15,106.176649
+16,106.319359
+17,106.410870
+18,106.190429
+19,106.344764
+20,106.148616
+Total_Training_Time,2125.863891
+Best_Accuracy,90.400665

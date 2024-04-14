@@ -1,0 +1,24 @@
+Namespace(config='DeepCoral/DeepCoral.yaml', seed=1, num_workers=3, log_file_name='results/DeepCoral/DeepCoral-batch_1-batch_2.csv', backbone='resnet50', use_bottleneck=True, data_dir='C:/Users/admin/Desktop/MPhil/transferlearning/code/DeepDA/seed_dataset_office', src_domain='batch_1', tgt_domain='batch_2', batch_size=32, n_epoch=20, early_stop=0, epoch_based_training=False, n_iter_per_epoch=500, lr=0.003, momentum=0.9, weight_decay=0.0005, lr_gamma=0.0003, lr_decay=0.75, lr_scheduler=True, transfer_loss_weight=10.0, transfer_loss='coral', device=device(type='cuda'), n_class=2, max_iter=10000)
+Epoch,Time_Taken(s)
+1,103.585823
+2,102.888097
+3,102.795784
+4,102.946965
+5,102.783837
+6,102.929675
+7,102.992243
+8,102.963173
+9,102.975805
+10,102.750994
+11,102.947923
+12,102.795509
+13,102.933354
+14,103.002078
+15,102.933298
+16,102.807012
+17,102.940746
+18,102.772032
+19,102.755282
+20,102.784015
+Total_Training_Time,2058.303660
+Best_Accuracy,86.060097

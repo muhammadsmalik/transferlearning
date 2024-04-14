@@ -1,0 +1,24 @@
+Namespace(config='DAAN/DAAN.yaml', seed=1, num_workers=3, log_file_name='results/DAAN/DAAN-batch_3-batch_2.csv', backbone='resnet50', use_bottleneck=True, data_dir='C:/Users/admin/Desktop/MPhil/transferlearning/code/DeepDA/seed_dataset_office', src_domain='batch_3', tgt_domain='batch_2', batch_size=32, n_epoch=20, early_stop=0, epoch_based_training=False, n_iter_per_epoch=500, lr=0.01, momentum=0.9, weight_decay=0.0005, lr_gamma=0.0003, lr_decay=0.75, lr_scheduler=True, transfer_loss_weight=1.0, transfer_loss='daan', device=device(type='cuda'), n_class=2, max_iter=10000)
+Epoch,Time_Taken(s)
+1,109.614988
+2,109.326512
+3,109.167920
+4,108.967770
+5,109.176648
+6,109.170220
+7,109.152531
+8,109.364611
+9,109.006893
+10,109.130395
+11,109.342690
+12,109.159408
+13,109.390476
+14,109.164190
+15,109.375535
+16,109.166594
+17,108.942513
+18,109.158557
+19,109.173020
+20,108.993674
+Total_Training_Time,2183.970666
+Best_Accuracy,85.308846

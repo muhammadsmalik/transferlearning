@@ -1,7 +1,7 @@
-ConfigArgParse==1.4.1
-torch==1.13.1
-torchvision==0.9.1
-scikit-learn
-matplotlib
-xlwt
-pyyaml
+ConfigArgParse>=1.4.1
+torch>=2.2.0  # Updated to a more recent stable version
+torchvision>=0.13.0  # Updated to a version compatible with the new torch version
+scikit-learn>=1.0.2  # Updated to a more recent stable version
+matplotlib>=3.5.1  # Updated to a more recent stable version
+xlwt>=1.3.0  # Assuming you want a recent version; adjust as necessary
+pyyaml>=6.0  # Updated to a more recent stable version

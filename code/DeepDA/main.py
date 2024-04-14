@@ -7,6 +7,9 @@ import utils
 from utils import str2bool
 import numpy as np
 import random
+import time
+
+# 11:52
 
 def get_parser():
     """Get default arguments."""
@@ -19,6 +22,7 @@ def get_parser():
     parser.add("--config", is_config_file=True, help="config file path")
     parser.add("--seed", type=int, default=0)
     parser.add_argument('--num_workers', type=int, default=0)
+    parser.add_argument('--log_file_name', type=str, default='results/train_loggg.csv', help="File name for saving training logs")
     
     # network related
     parser.add_argument('--backbone', type=str, default='resnet50')
@@ -106,39 +110,57 @@ def test(model, target_test_loader, args):
     acc = 100. * correct / len_target_dataset
     return acc, test_loss.avg
 
+import os
+import time
+import numpy as np
+import utils
+
 def train(source_loader, target_train_loader, target_test_loader, model, optimizer, lr_scheduler, args):
     len_source_loader = len(source_loader)
     len_target_loader = len(target_train_loader)
     n_batch = min(len_source_loader, len_target_loader)
     if n_batch == 0:
-        n_batch = args.n_iter_per_epoch 
-    
+        n_batch = args.n_iter_per_epoch
+
     iter_source, iter_target = iter(source_loader), iter(target_train_loader)
 
     best_acc = 0
     stop = 0
+    headers = ['epoch', 'cls_loss', 'transfer_loss', 'total_loss', 'test_loss', 'test_acc']
     log = []
-    for e in range(1, args.n_epoch+1):
+
+    log_base_name = os.path.splitext(args.log_file_name)[0]
+    time_log_file_name = f'{log_base_name}_time_log.txt'
+
+    training_start_time = time.time()
+
+    # Log args namespace and headers for time log
+    with open(time_log_file_name, 'w') as f:
+        f.write(f'{args}\n')
+        f.write('Epoch,Time_Taken(s)\n')
+
+    for e in range(1, args.n_epoch + 1):
+        start_time = time.time()
+
         model.train()
         train_loss_clf = utils.AverageMeter()
         train_loss_transfer = utils.AverageMeter()
         train_loss_total = utils.AverageMeter()
         model.epoch_based_processing(n_batch)
-        
+
         if max(len_target_loader, len_source_loader) != 0:
             iter_source, iter_target = iter(source_loader), iter(target_train_loader)
-        
+
         criterion = torch.nn.CrossEntropyLoss()
         for _ in range(n_batch):
-            data_source, label_source = next(iter_source) # .next()
-            data_target, _ = next(iter_target) # .next()
-            data_source, label_source = data_source.to(
-                args.device), label_source.to(args.device)
+            data_source, label_source = next(iter_source)
+            data_target, _ = next(iter_target)
+            data_source, label_source = data_source.to(args.device), label_source.to(args.device)
             data_target = data_target.to(args.device)
-            
+
             clf_loss, transfer_loss = model(data_source, data_target, label_source)
             loss = clf_loss + args.transfer_loss_weight * transfer_loss
-            
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -148,25 +170,50 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
             train_loss_clf.update(clf_loss.item())
             train_loss_transfer.update(transfer_loss.item())
             train_loss_total.update(loss.item())
-            
-        log.append([train_loss_clf.avg, train_loss_transfer.avg, train_loss_total.avg])
-        
-        info = 'Epoch: [{:2d}/{}], cls_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}'.format(
-                        e, args.n_epoch, train_loss_clf.avg, train_loss_transfer.avg, train_loss_total.avg)
-        # Test
-        stop += 1
+
         test_acc, test_loss = test(model, target_test_loader, args)
-        info += ', test_loss {:4f}, test_acc: {:.4f}'.format(test_loss, test_acc)
-        np_log = np.array(log, dtype=float)
-        np.savetxt('train_log.csv', np_log, delimiter=',', fmt='%.6f')
+        if isinstance(test_acc, torch.Tensor):
+            test_acc = test_acc.item()  # Ensure test_acc is a Python scalar
+
+        log.append([e, train_loss_clf.avg, train_loss_transfer.avg, train_loss_total.avg, test_loss, test_acc])
+
+        epoch_duration = time.time() - start_time
+        with open(time_log_file_name, 'a') as f:
+            f.write(f'{e},{epoch_duration:.6f}\n')
+
+        info = 'Epoch: [{:2d}/{}], cls_loss: {:.4f}, transfer_loss: {:.4f}, total_loss: {:.4f}, test_loss: {:.4f}, test_acc: {:.4f}'.format(
+            e, args.n_epoch, train_loss_clf.avg, train_loss_transfer.avg, train_loss_total.avg, test_loss, test_acc)
+
+        if e == 1:
+            np.savetxt(args.log_file_name, [log[-1]], delimiter=',', header=','.join(headers), comments='', fmt='%s')
+        else:
+            with open(args.log_file_name, 'ab') as f:
+                np.savetxt(f, [log[-1]], delimiter=',', fmt='%s')
+
         if best_acc < test_acc:
             best_acc = test_acc
             stop = 0
+
         if args.early_stop > 0 and stop >= args.early_stop:
             print(info)
             break
+
         print(info)
+
+    total_training_time = time.time() - training_start_time
+    with open(time_log_file_name, 'a') as f:
+        f.write(f'Total_Training_Time,{total_training_time:.6f}\n')
+        f.write(f'Best_Accuracy,{best_acc:.6f}\n')
+
+    # Append best accuracy to the CSV log
+    log.append(['-', '-', '-', '-', '-', best_acc])
+    with open(args.log_file_name, 'ab') as f:
+        np.savetxt(f, [log[-1]], delimiter=',', fmt='%s')
+
     print('Transfer result: {:.4f}'.format(best_acc))
+    print(f"Total training time: {total_training_time:.2f} seconds")
+
+
 
 def main():
     parser = get_parser()
@@ -174,7 +221,10 @@ def main():
     setattr(args, "device", torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
     print(args)
     set_random_seed(args.seed)
+    print(f"Using device: {args.device}")
+    print("Loading data...")
     source_loader, target_train_loader, target_test_loader, n_class = load_data(args)
+    print("Data loaded")
     setattr(args, "n_class", n_class)
     if args.epoch_based_training:
         setattr(args, "max_iter", args.n_epoch * min(len(source_loader), len(target_train_loader)))
@@ -191,4 +241,9 @@ def main():
     
 
 if __name__ == "__main__":
+    start_time = time.time()  # Record start time
     main()
+    end_time = time.time()  # Record end time
+    total_time = end_time - start_time
+    print(f"Execution time: {total_time:.2f} seconds")
+

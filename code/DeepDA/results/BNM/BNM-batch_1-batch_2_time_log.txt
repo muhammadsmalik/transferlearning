@@ -1,0 +1,24 @@
+Namespace(config='BNM/BNM.yaml', seed=1, num_workers=3, log_file_name='results/BNM/BNM-batch_1-batch_2.csv', backbone='resnet50', use_bottleneck=True, data_dir='C:/Users/admin/Desktop/MPhil/transferlearning/code/DeepDA/seed_dataset_office', src_domain='batch_1', tgt_domain='batch_2', batch_size=32, n_epoch=20, early_stop=0, epoch_based_training=False, n_iter_per_epoch=300, lr=0.001, momentum=0.9, weight_decay=0.0005, lr_gamma=0.0003, lr_decay=0.75, lr_scheduler=True, transfer_loss_weight=1.0, transfer_loss='bnm', device=device(type='cuda'), n_class=2, max_iter=6000)
+Epoch,Time_Taken(s)
+1,66.642140
+2,66.096437
+3,65.986058
+4,65.971873
+5,66.023697
+6,65.947010
+7,65.795481
+8,66.016031
+9,65.940285
+10,65.981024
+11,65.983816
+12,65.964757
+13,65.987192
+14,66.004398
+15,66.163336
+16,65.954256
+17,65.963404
+18,66.013747
+19,65.989836
+20,65.987786
+Total_Training_Time,1320.433079
+Best_Accuracy,79.298828

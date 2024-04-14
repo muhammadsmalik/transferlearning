@@ -7,3 +7,6 @@ code/.DS_Store
 *.pkl
 outputs/
 __pycache__/
+code/DeepDA/office31
+data/seed_dataset_new
+code/DeepDA/seed_dataset_office
